@@ -13,16 +13,6 @@ directory "#{node[:home]}#{node[:programs]}" do
   action :create
 end
 
-=begin
-execute "-- Installing JDK" do
-  user "#{node[:system][:owner]}"  
-  cwd "#{node[:home]}#{node[:programs]}"
-  command "#{node[:home]}#{node[:binaries_sqat_folder]}/#{node[:binaries][:jdk1_7_0]} && date > #{node[:home]}/.jdk_installed"
-  not_if { ::File.exists?("#{node[:home]}/.jdk_installed")}
-end
-=end
-
-################## Set-up Perforce  #############################
 directory "#{node[:home]}#{node[:programs]}" do
   owner "#{node[:system][:owner]}"
   mode "0775"
@@ -81,72 +71,6 @@ end
 
 
 ############## set up p4client ###################################
-
-if workarea.eql?("snapfish")
-  puts "picking snapfish_p4client"
-
-  template "#{node[:workspace]}/p4client.txt" do
-  owner "#{node[:system][:owner]}"
-  user "#{node[:system][:owner]}"
-  mode "0644"
-  source "snapfish_p4client.erb"
-  variables(
-    :P4CLIENT => node[:p4settings][:P4CLIENT],
-    :WORKSPACE => "#{node[:workspace]}",
-    :P4USER => node[:p4settings][:P4USER],
-    :HOST => "#{node[:system][:host]}",
-  )
-end
-elsif workarea.eql?("walmart") 
-  puts "picking walmart_p4client"
-
-  template "#{node[:workspace]}/p4client.txt" do
-  owner "#{node[:system][:owner]}"
-  user "#{node[:system][:owner]}"
-  mode "0644"
-  source "walmart_p4client.erb"
-  variables(
-    :P4CLIENT => node[:p4settings][:P4CLIENT],
-    :WORKSPACE => "#{node[:workspace]}",
-    :P4USER => node[:p4settings][:P4USER],
-    :HOST => "#{node[:system][:host]}",
-  )
-end  
-elsif workarea.eql?("walgreens") 
-  puts "picking walgreens_p4client"
-
-  template "#{node[:workspace]}/p4client.txt" do
-  owner "#{node[:system][:owner]}"
-  user "#{node[:system][:owner]}"
-  mode "0644"
-  source "walgreens_p4client.erb"
-  variables(
-    :P4CLIENT => node[:p4settings][:P4CLIENT],
-    :WORKSPACE => "#{node[:workspace]}",
-    :P4USER => node[:p4settings][:P4USER],
-    :HOST => "#{node[:system][:host]}",
-  )
-end 
-elsif workarea.eql?("grid")
-  puts "picking grid_p4client"
-
-  template "#{node[:workspace]}/p4client.txt" do
-  owner "#{node[:system][:owner]}"
-  user "#{node[:system][:owner]}"
-  mode "0644"
-  source "grid_p4client.erb"
-  variables(
-    :P4CLIENT => node[:p4settings][:P4CLIENT],
-    :WORKSPACE => "#{node[:workspace]}",
-    :P4USER => node[:p4settings][:P4USER],
-    :HOST => "#{node[:system][:host]}",
-  )
-end
-
-else
-  puts "No p4client template taken" 
-end
-
 
 ruby_block "p4login" do
  block do
