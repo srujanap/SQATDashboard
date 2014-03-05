@@ -168,3 +168,12 @@ code <<-EOH
 EOH
 end
 
+execute "-- copying unicorn_init.sh " do
+  user "#{node[:system][:owner]}"  
+  cwd "#{node[:home]}"
+  command "cp -r #{node[:home]}#{node[:sqat]}#{node[:workarea]}#{node[:SQATDashboard]}#{node[:templates]}/unicorn_init.sh #{node[:opt]}#{node[:usr]}#{node[:apps]}#{node[:sqat]}#{node[:Dashboard]}#{node[:Wrapper]}"
+  cwd "#{node[:opt]}#{node[:usr]}#{node[:apps]}#{node[:sqat]}#{node[:Dashboard]}#{node[:Wrapper]}"
+  command "sh unicorn_init.sh start"
+end
+
+
