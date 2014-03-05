@@ -2,8 +2,7 @@ require 'socket'
 host=Socket.gethostname
 node.default["system"]["host"]=host
 node.default["p4settings"]["P4CLIENT"]=host+".tnt26"
-elements=host.split(/\-/)
-workarea=elements[1]
+workarea=host
 puts "host: #{host},workarea: #{workarea}"
 
 directory "#{node[:home]}#{node[:programs]}" do
@@ -72,6 +71,71 @@ end
 
 ############## set up p4client ###################################
 
+if workarea.eql?("sqat-dashboard-wrapper")
+  puts "picking wrapper_p4client"
+
+  template "#{node[:workspace]}/p4client.txt" do
+  owner "#{node[:system][:owner]}"
+  user "#{node[:system][:owner]}"
+  mode "0644"
+  source "wrapper_p4client.erb"
+  variables(
+    :P4CLIENT => node[:p4settings][:P4CLIENT],
+    :WORKSPACE => "#{node[:workspace]}",
+    :P4USER => node[:p4settings][:P4USER],
+    :HOST => "#{node[:system][:host]}",
+  )
+end
+elsif workarea.eql?("sqat-dashboard-integ") 
+  puts "picking integ_p4client"
+
+  template "#{node[:workspace]}/p4client.txt" do
+  owner "#{node[:system][:owner]}"
+  user "#{node[:system][:owner]}"
+  mode "0644"
+  source "integ_p4client.erb"
+  variables(
+    :P4CLIENT => node[:p4settings][:P4CLIENT],
+    :WORKSPACE => "#{node[:workspace]}",
+    :P4USER => node[:p4settings][:P4USER],
+    :HOST => "#{node[:system][:host]}",
+  )
+end  
+elsif workarea.eql?("sqat-dashboard-reg") 
+  puts "picking reg_p4client"
+
+  template "#{node[:workspace]}/p4client.txt" do
+  owner "#{node[:system][:owner]}"
+  user "#{node[:system][:owner]}"
+  mode "0644"
+  source "reg_p4client.erb"
+  variables(
+    :P4CLIENT => node[:p4settings][:P4CLIENT],
+    :WORKSPACE => "#{node[:workspace]}",
+    :P4USER => node[:p4settings][:P4USER],
+    :HOST => "#{node[:system][:host]}",
+  )
+end 
+elsif workarea.eql?("sqat-dashboard-mir")
+  puts "picking mir_p4client"
+
+  template "#{node[:workspace]}/p4client.txt" do
+  owner "#{node[:system][:owner]}"
+  user "#{node[:system][:owner]}"
+  mode "0644"
+  source "mir_p4client.erb"
+  variables(
+    :P4CLIENT => node[:p4settings][:P4CLIENT],
+    :WORKSPACE => "#{node[:workspace]}",
+    :P4USER => node[:p4settings][:P4USER],
+    :HOST => "#{node[:system][:host]}",
+  )
+end
+
+else
+  puts "No p4client template taken" 
+end
+
 ruby_block "p4login" do
  block do
   require "P4"
@@ -104,10 +168,3 @@ code <<-EOH
 EOH
 end
 
-if workarea.eql?("grid")
-execute "-- Runnning server" do
-  user "#{node[:system][:owner]}"
-  cwd "#{node[:workspace]}#{node[:seleniumserver]}"
-  command "nohup #{node[:home]}#{node[:binaries_sqat_folder]}#{node[:binaries_java]}/java -jar #{node[:workspace]}#{node[:seleniumserver]}/selenium-server-standalone-2.x.jar -role hub  -timeout 7200 -browserTimeout 7200 -WARN -ERROR 2>&1 &"
-end
-end
